@@ -3,19 +3,19 @@ module FaceRecognition
     extend ActiveSupport::Concern
 
     included do
-
       before_create :generate_password
 
       def self.link_to_fb(id, auth)
         user = nil
-        if FacebookUser.exists?(self.class.facebook_id_column.to_sym => auth.id)
-          user = FacebookUser.where(self.class.facebook_id_column.to_sym => auth.id).first
+        if FacebookUser.exists?(User.facebook_id_column.to_sym => auth.id)
+          user = FacebookUser.where(User.facebook_id_column.to_sym => auth.id).first
         else
           user = find(id)
-          user.update(
-            fb_uid: auth.id, type: "FacebookUser",
-            display_name: "#{auth.first_name} #{auth.last_name[0]}.",
-            fb_access_token:  auth.access_token)
+          user[facebook_id_column.to_sym] = auth.id
+          user.type = "FacebookUser"
+          # We don't validate here because we are about to update all the details
+          user.save(validate: false)
+          FacebookUser.from_omniauth(auth)
         end
 
         return user

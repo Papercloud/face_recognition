@@ -117,3 +117,76 @@ class AnonymousUser < User
 
 end
 ```
+
+This gives you the methods to link an anonymous user to a Facebook user when creating a session token.
+
+### Controllers
+
+At the moment there is not a controller built into the gem, but below is an example sessions controller that can be used to login users, as well as linking anonymous users to Facebook Users.
+
+**sessions_controller.rb**
+
+```
+def create
+  user = FbGraph2::User.me(params[:user][:oauth_token])
+  auth_request = user.fetch rescue nil
+
+  if auth_request
+    if params[:user][:id]
+      authenticate_user!
+      user = AnonymousUser.link_to_fb(params[:user][:id], auth_request)
+      if user and current_user.id == params[:user][:id]
+        current_user.destroy
+      end
+    else
+      user = FacebookUser.from_omniauth(auth_request)
+    end
+    return respond_with(user, root: "user", serializer: NewUserSerializer)
+  end
+  respond_with({}, status: 400)
+end
+```
+
+The registrations controller is fairly similar to the standard registrations controller, but because we have multiple user types we need to override the `resource_class` when we are updating the user.
+
+In the below example we are using [`inherited_resources`](https://github.com/josevalim/inherited_resources)
+
+**registrations_controller.rb**
+
+```
+def create
+  create! do |format|
+    format.json {respond_with(@user, serializer: NewUserSerializer)}
+  end
+end
+
+def update
+  @user = resource_class.find(current_user.id)
+  update!
+end
+
+def resource_class
+  #turn the type attribute to constants due to multiple user types
+  case params[:user][:type]
+  when "FacebookUser"
+    return FacebookUser
+  when "AnonymousUser"
+    return AnonymousUser
+  else
+    return User
+  end
+end
+```
+
+### Future Features
+
+Eventually we will turn this into a full Rails engine and include the controllers in the gem. For the moment we are leaving them out so that you can customise them to your needs.
+
+**Other future features:**
+
+* add [simple_token_authentication](https://github.com/gonzalo-bulnes/simple_token_authentication) into the gem.
+* Allow flexibility with model names.
+
+
+
+

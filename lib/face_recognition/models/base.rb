@@ -3,6 +3,7 @@ module FaceRecognition
     extend ActiveSupport::Concern
 
     included do
+
       def self.facebook_id_column
         # Work out what sort of UID the user model is using
         return "uid" if ActiveRecord::Base.connection.column_exists?("#{self.table_name}", "uid")
