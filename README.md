@@ -120,6 +120,17 @@ end
 
 This gives you the methods to link an anonymous user to a Facebook user when creating a session token.
 
+### Facebook Tokens
+
+The gem is currently using the assumption that your Facebook credentials are currently stored as environment variables, with the following keys:
+
+```
+FACEBOOK_APP_ID=
+FACEBOOK_SECRET=
+```
+
+The gem will not work if these are not set correctly
+
 ### Controllers
 
 At the moment there is not a controller built into the gem, but below is an example sessions controller that can be used to login users, as well as linking anonymous users to Facebook Users.
