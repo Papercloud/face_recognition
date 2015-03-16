@@ -80,10 +80,7 @@ These are the column options that are currently supported:
 * `fb_uid`
 
 **Authentication Columns:**
-* `oauth_token`
-* `omniauth_token`
 * `facebook_token`
-* `fb_access_token`
 
 **User Photo Columns:**
 

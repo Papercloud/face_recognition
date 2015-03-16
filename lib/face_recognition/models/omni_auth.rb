@@ -64,8 +64,8 @@ module FaceRecognition
         user = FacebookUser.where(id: id).first
         return unless user
         fb_auth = FbGraph2::Auth.new(ENV['FACEBOOK_APP_ID'], ENV['FACEBOOK_SECRET'])
-        fb_auth.fb_exchange_token=(user.fb_access_token)
-        user.fb_access_token = fb_auth.access_token!.access_token
+        fb_auth.fb_exchange_token=(user.facebook_token)
+        user.facebook_token = fb_auth.access_token!.access_token
         user.save
       end
 
