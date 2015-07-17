@@ -43,7 +43,7 @@ module FaceRecognition
         user.remote_avatar_url = "http://graph.facebook.com/#{auth.id}/picture?type=large" if user.respond_to? :remote_avatar_url=
 
         # Regular Devise columns set
-        user.email = auth.email || ''
+        user.email = auth.email
         user.password = Devise.friendly_token[0, 20]
 
         # Extra Info that we can grab
